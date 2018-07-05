@@ -10,6 +10,7 @@ function disjointSet() {
 }
 
 var DisjointSet = function() {
+    this._key = Symbol('DisjointSetKey');
     this._reset();
 };
 
@@ -17,7 +18,7 @@ DisjointSet.prototype = {
     add: function (val) {
         var id = this._isPrimitive(val) ? val : this._lastId;
         if (typeof val._disjointSetId === 'undefined') {
-            val._disjointSetId = this._relations[id] = id;
+            val[this._key] = this._relations[id] = id;
             this._objects[id] = val;
             this._size[id] = 1;
             this._lastId++;
@@ -26,7 +27,7 @@ DisjointSet.prototype = {
     },
 
     find: function (val) {
-        var id = this._isPrimitive(val) ? val : val._disjointSetId;
+        var id = this._isPrimitive(val) ? val : val[this._key];
         return this._findById(id);
     },
 
@@ -97,7 +98,7 @@ DisjointSet.prototype = {
 
     _reset: function () {
         for (var id in this._objects) {
-            delete this._objects[id]._disjointSetId;
+            delete this._objects[id][this._key];
         }
         this._objects = {};
         this._relations = {};
